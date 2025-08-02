@@ -10,10 +10,17 @@ export async function handler(event) {
 
   const { prompt } = JSON.parse(event.body || '{}');
 
+  if (!prompt || typeof prompt !== 'string') {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Prompt is required' })
+    };
+  }
+
   if (!process.env.OPENROUTER_API_KEY) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Missing API key' })
+      body: JSON.stringify({ error: 'Missing API key in server environment' })
     };
   }
 
@@ -35,7 +42,7 @@ export async function handler(event) {
     if (!response.ok) {
       return {
         statusCode: response.status,
-        body: JSON.stringify({ error: data?.error?.message || 'OpenRouter error' })
+        body: JSON.stringify({ error: data?.error?.message || 'OpenRouter API error' })
       };
     }
 
@@ -47,7 +54,7 @@ export async function handler(event) {
   } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message || "Server error" })
+      body: JSON.stringify({ error: err.message || "Unexpected server error" })
     };
   }
 }
