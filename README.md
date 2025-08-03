@@ -174,6 +174,6 @@ MIT – Free to use, modify, and learn from.
 ## 🙋‍♂️ Author
 
 Built with 💡 by **Ram Vanumu**  
-[LinkedIn](https://www.linkedin.com/in/ram-vanumu-80b319285/)  
+[LinkedIn](https://www.linkedin.com/in/ramvanumu07/)  
 
 ---
