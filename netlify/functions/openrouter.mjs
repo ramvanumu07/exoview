@@ -53,16 +53,20 @@ export async function handler(event) {
   }
 
   try {
+    // Try the free model first
+    let requestBody = {
+      model: "meta-llama/llama-3.1-8b-instruct:free",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 1000
+    };
+
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        model: "anthropic/claude-3.5-sonnet",
-        messages: [{ role: "user", content: prompt }]
-      })
+      body: JSON.stringify(requestBody)
     });
 
     const data = await response.json();

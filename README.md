@@ -111,6 +111,13 @@ Instead of exposing your API key in the frontend, you're using:
    - Ensure `OPENROUTER_API_KEY` is set in Netlify's environment variables
    - Check the key format and permissions
 
+4. **"This request requires more credits" or "Can only afford X tokens"**
+   - The app now uses a FREE model (`meta-llama/llama-3.1-8b-instruct:free`)
+   - If you still get this error, check your OpenRouter account status
+   - Alternative free models you can try in the code:
+     * `google/gemma-7b-it:free`
+     * `mistralai/mistral-7b-instruct:free`
+
 ### Debug Mode
 
 Triple-click on the "🎉 Congratulations!" title on the results page to view recent error logs for debugging.
