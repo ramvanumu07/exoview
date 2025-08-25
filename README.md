@@ -81,14 +81,39 @@ Instead of exposing your API key in the frontend, you're using:
    npm install
    ```
 
-2. **Run a local server (optional)**  
-   You can use VS Code Live Server or `serve` to preview frontend
+2. **Set up environment variables**  
+   Create a `.env` file in the root directory:
+   ```bash
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
+   ```
 
 3. **Use Netlify CLI to emulate backend**  
    ```bash
    npm install -g netlify-cli
    netlify dev
    ```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **"No questions found" or "Empty response"**
+   - Check if your OpenRouter API key is correctly set in Netlify environment variables
+   - Verify the API key has sufficient credits
+   - Try a different, shorter job role name
+
+2. **"Unable to connect to service"**
+   - Check your internet connection
+   - Verify Netlify Functions are deployed correctly
+   - Check browser console for CORS errors
+
+3. **"Service configuration error"**
+   - Ensure `OPENROUTER_API_KEY` is set in Netlify's environment variables
+   - Check the key format and permissions
+
+### Debug Mode
+
+Triple-click on the "🎉 Congratulations!" title on the results page to view recent error logs for debugging.
 
 ---
 

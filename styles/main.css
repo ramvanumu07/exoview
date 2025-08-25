@@ -399,6 +399,26 @@ textarea::placeholder {
   color: var(--hr-red);
 }
 
+.error-container {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.error-message {
+  color: var(--bg-fg);
+  font-size: 1.1rem;
+  line-height: 1.4;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(232, 82, 82, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid var(--hr-red);
+}
+
+.retry-btn {
+  background: linear-gradient(100deg, var(--hr-green), #5ce085 95%);
+}
+
 @media (max-width:600px) {
   .app-card {
     padding: 0.8rem 0.2rem 0.7rem 0.2rem;
