@@ -53,36 +53,61 @@ export async function handler(event) {
   }
 
   try {
-    // Use OpenRouter's Horizon Beta model with cost optimization
-    let requestBody = {
-      model: "openrouter/horizon-beta",
-      messages: [{ role: "user", content: prompt }],
-      max_tokens: 800,
-      temperature: 0.7
-    };
+    // Try multiple models in order of preference
+    const models = [
+      "google/gemini-flash-1.5",
+      "meta-llama/llama-3.1-8b-instruct:free", 
+      "microsoft/phi-3-medium-128k-instruct:free",
+      "google/gemma-7b-it:free"
+    ];
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(requestBody)
-    });
+    let response;
+    let lastError;
 
-    const data = await response.json();
+    for (const model of models) {
+      try {
+        let requestBody = {
+          model: model,
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 800,
+          temperature: 0.7
+        };
 
-    if (!response.ok) {
+        response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        if (response.ok) {
+          break; // Success, exit the loop
+        } else {
+          const errorData = await response.json();
+          lastError = `${model}: ${errorData?.error?.message || response.status}`;
+          continue; // Try next model
+        }
+      } catch (err) {
+        lastError = `${model}: ${err.message}`;
+        continue; // Try next model
+      }
+    }
+
+    if (!response || !response.ok) {
       return {
-        statusCode: response.status,
+        statusCode: 500,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Headers': 'Content-Type',
           'Access-Control-Allow-Methods': 'POST, OPTIONS'
         },
-        body: JSON.stringify({ error: data?.error?.message || 'OpenRouter API error' })
+        body: JSON.stringify({ error: `All models failed. Last error: ${lastError}` })
       };
     }
+
+    const data = await response.json();
 
     return {
       statusCode: 200,

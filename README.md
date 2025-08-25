@@ -111,11 +111,15 @@ Instead of exposing your API key in the frontend, you're using:
    - Ensure `OPENROUTER_API_KEY` is set in Netlify's environment variables
    - Check the key format and permissions
 
-4. **"This request requires more credits" or "Can only afford X tokens"**
-   - The app uses `openrouter/horizon-beta` model with optimized token usage
-   - Prompts are now concise to reduce costs (max 800 tokens per response)
-   - Check your OpenRouter account credits and top up if needed
-   - Consider switching to a cheaper model if costs are an issue
+4. **"This request requires more credits" or model errors**
+   - The app now tries multiple models automatically (Gemini Flash, Llama, Phi-3, Gemma)
+   - Includes several FREE models as fallbacks
+   - Prompts are optimized to reduce costs (max 800 tokens per response)
+   - If all models fail, check your OpenRouter account status
+
+5. **"The alpha period for this model has ended"**
+   - This is automatically handled - the app tries backup models
+   - No action needed from you
 
 ### Debug Mode
 
