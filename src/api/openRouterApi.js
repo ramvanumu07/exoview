@@ -1,25 +1,14 @@
 const BACKEND_API = "/.netlify/functions/openrouter";
 
 export const fetchInterviewQuestions = async (role) => {
-  const prompt = `
-    You are acting as an experienced HR interviewer and team member preparing a real interview for a fresher applying to the role of ${role}.
+  const prompt = `Create 5 realistic interview questions for a fresher ${role} position. Each question should test different abilities (problem-solving, communication, teamwork, technical skills, adaptability). Make them behavioral/scenario-based. Format as numbered list:
+1. [question]
+2. [question]
+3. [question]
+4. [question]
+5. [question]
 
-    Your task is to ask 5 realistic interview questions that reflect what a candidate would be asked in an actual screening or early-round interview. The questions should:
-    - Be behavioral or scenario-based where relevant
-    - Each test a **different real-world ability** expected in a fresher for this role
-    - Be **aligned with the responsibilities of the role**
-    - Avoid textbook or generic “Tell me about yourself” style questions
-    - Reflect real workplace thinking or challenges the fresher may face
-
-    Only output plain text as a numbered list like below:
-    1. [Your first question here]
-    2. ...
-    3. ...
-    4. ...
-    5. ...
-
-    Do NOT include any quotes, markdown, symbols, or extra formatting.
-  `;
+No extra formatting.`;
 
   const txt = await fetchOpenRouterCompletion(prompt);
 
@@ -55,37 +44,19 @@ export const fetchInterviewQuestions = async (role) => {
 };
 
 export const fetchHRFeedback = async (question, answer, role) => {
-  const prompt = `
-    You are acting as an experienced HR recruiter reviewing a fresher's answer to an interview question.
+  const prompt = `Evaluate this ${role} interview answer. Return only JSON:
 
-    Given:
-    - The job role: ${role}
-    - The interview question: ${question}
-    - The candidate's answer: ${answer}
+Question: ${question}
+Answer: ${answer}
 
-    Only output a valid JSON object exactly in the format shown below. Do NOT write any extra text or explanation.
+{
+  "strengths": ["positive points"],
+  "gaps": ["areas missing"],
+  "suggestions": ["specific improvements"],
+  "rating": "X/10"
+}
 
-    {
-      "strengths": [],
-      "gaps": [],
-      "suggestions": [],
-      "rating": "X/10"
-    }
-
-    Each section must be written from the point of view of a professional HR interviewer.  
-    - "strengths" and "gaps" should list precise, evidence-based observations based on the answer.  
-    - "suggestions" must be actionable and insightful — not generic.
-
-    explain four key points in "suggestions":
-    1. **one ability the question was testing** (e.g., leadership, analytical thinking, communication).  
-    2. **one thing the candidate focused on** (was it off-track, partial, or strong).  
-    3. **What's one thing that should highlight more clearly** (examples, decisions, impact, thought process).  
-    4. **One advice to improve future answers** that would reflect the right abilities and impress real interviewers.
-
-    If the answer is completely invalid (e.g., gibberish), rate it below 2/10 and say ["None"] in strengths.
-
-    Respond only with the raw JSON object. No extra formatting.
-  `;
+Be specific and actionable.`;
 
   let txt = await fetchOpenRouterCompletion(prompt);
   let fb = tryParseFeedback(txt);

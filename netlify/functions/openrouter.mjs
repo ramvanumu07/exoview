@@ -53,11 +53,12 @@ export async function handler(event) {
   }
 
   try {
-    // Try the free model first
+    // Use OpenRouter's Horizon Beta model with cost optimization
     let requestBody = {
-      model: "meta-llama/llama-3.1-8b-instruct:free",
+      model: "openrouter/horizon-beta",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 1000
+      max_tokens: 800,
+      temperature: 0.7
     };
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
