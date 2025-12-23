@@ -40,7 +40,7 @@ export async function handler(event) {
     };
   }
 
-  if (!process.env.OPENROUTER_API_KEY) {
+  if (!process.env.GROQ_API_KEY) {
     return {
       statusCode: 500,
       headers: {
@@ -53,12 +53,12 @@ export async function handler(event) {
   }
 
   try {
-    // Try multiple models in order of preference
+    // Try multiple Groq models in order of preference
     const models = [
-      "google/gemini-flash-1.5",
-      "meta-llama/llama-3.1-8b-instruct:free", 
-      "microsoft/phi-3-medium-128k-instruct:free",
-      "google/gemma-7b-it:free"
+      "llama-3.1-70b-versatile",
+      "llama-3.1-8b-instant",
+      "mixtral-8x7b-32768",
+      "gemma2-9b-it"
     ];
 
     let response;
@@ -69,14 +69,16 @@ export async function handler(event) {
         let requestBody = {
           model: model,
           messages: [{ role: "user", content: prompt }],
-          max_tokens: 800,
-          temperature: 0.7
+          max_tokens: 1000,
+          temperature: 0.7,
+          top_p: 1,
+          stream: false
         };
 
-        response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify(requestBody)

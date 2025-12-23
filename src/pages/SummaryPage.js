@@ -2,8 +2,14 @@ import { renderSummaryCard } from '../components/SummaryCard.js';
 import { getRecentErrors } from '../utils/helpers.js';
 
 export const renderSummaryPage = (container, session, onRestart) => {
-  container.innerHTML = `<div class="app-card"></div>`;
-  const card = container.querySelector('.app-card');
+  container.innerHTML = `
+    <div class="app-container">
+      <div class="main-content">
+        <div class="chat-card" id="summary-card"></div>
+      </div>
+    </div>
+  `;
+  const card = container.querySelector('#summary-card');
   // Render styled summary into card
   renderSummaryCard(card, session, onRestart);
 

@@ -1,4 +1,4 @@
-const BACKEND_API = "/.netlify/functions/openrouter";
+const BACKEND_API = "/.netlify/functions/groq";
 
 export const fetchInterviewQuestions = async (role) => {
   const prompt = `Create 5 realistic interview questions for a fresher ${role} position. Each question should test different abilities (problem-solving, communication, teamwork, technical skills, adaptability). Make them behavioral/scenario-based. Format as numbered list:
@@ -10,7 +10,7 @@ export const fetchInterviewQuestions = async (role) => {
 
 No extra formatting.`;
 
-  const txt = await fetchOpenRouterCompletion(prompt);
+  const txt = await fetchGroqCompletion(prompt);
 
   if (!txt || txt.trim().length === 0) {
     throw new Error("Empty response received. Please try again.");
@@ -58,12 +58,12 @@ Answer: ${answer}
 
 Be specific and actionable.`;
 
-  let txt = await fetchOpenRouterCompletion(prompt);
+  let txt = await fetchGroqCompletion(prompt);
   let fb = tryParseFeedback(txt);
 
   // Retry once if parse failed
   if (!fb) {
-    txt = await fetchOpenRouterCompletion(prompt);
+    txt = await fetchGroqCompletion(prompt);
     fb = tryParseFeedback(txt);
   }
 
@@ -96,7 +96,7 @@ function tryParseFeedback(txt) {
   }
 }
 
-const fetchOpenRouterCompletion = async (prompt) => {
+const fetchGroqCompletion = async (prompt) => {
   try {
     const response = await fetch(BACKEND_API, {
       method: "POST",

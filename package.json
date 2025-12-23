@@ -1,14 +1,24 @@
 {
-  "name": "interviewturbo",
+  "name": "exoview",
   "version": "1.0.0",
   "type": "module",
   "main": "index.html",
+  "description": "AI-powered interview simulation with ChatGPT-like interface",
   "scripts": {
     "dev": "netlify dev",
-    "build": "echo 'No build step needed'"
+    "build": "echo 'No build step needed'",
+    "start": "netlify dev"
   },
   "dependencies": {
     "node-fetch": "^3.3.2"
   },
+  "keywords": [
+    "interview",
+    "ai",
+    "practice",
+    "chatgpt",
+    "simulation"
+  ],
+  "author": "Ram Vanumu",
   "license": "MIT"
 }

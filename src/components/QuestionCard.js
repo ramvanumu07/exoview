@@ -2,25 +2,39 @@
 export const renderQuestionCard = (container, question, onSubmit) => {
   const cleanQuestion = question.replace(/^["'`*\\[\](){}<>]+|["'`*\\[\](){}<>]+$/g, '').trim();
 
-  const div = document.createElement('div');
-  div.className = "question-block fadein";
-  div.innerHTML = `
-    <strong>${cleanQuestion}</strong>
-    <form id="answer-form" autocomplete="off" style="margin-top:1.3em;">
-      <textarea id="user-answer" rows="4" required placeholder="Type your answer…"></textarea>
-      <div id="input-nudge" class="muted" aria-live="polite"></div>
-      <button type="submit" class="main-btn">Submit Answer</button>
+  const questionDiv = document.createElement('div');
+  questionDiv.className = "question-container";
+  questionDiv.innerHTML = `<div class="question-text">${cleanQuestion}</div>`;
+  container.appendChild(questionDiv);
+
+  const answerDiv = document.createElement('div');
+  answerDiv.className = "answer-container";
+  answerDiv.innerHTML = `
+    <form id="answer-form" autocomplete="off">
+      <textarea id="user-answer" class="answer-textarea" required placeholder="Share your thoughts and experience..."></textarea>
+      <div id="input-nudge" class="error-message hidden" aria-live="polite"></div>
+      <button type="submit" class="btn btn-primary btn-full-width mt-lg">Submit Answer</button>
     </form>
   `;
-  container.appendChild(div);
-  div.querySelector('form').onsubmit = (e) => {
+  container.appendChild(answerDiv);
+
+  answerDiv.querySelector('form').onsubmit = (e) => {
     e.preventDefault();
-    const val = div.querySelector('#user-answer').value.trim();
-    if (val.length < 2) {
-      div.querySelector('#input-nudge').textContent = 'Please give a specific answer!';
-      setTimeout(() => div.querySelector('#input-nudge').textContent = '', 1700);
+    const val = answerDiv.querySelector('#user-answer').value.trim();
+    const nudgeDiv = answerDiv.querySelector('#input-nudge');
+    
+    if (val.length < 10) {
+      nudgeDiv.textContent = 'Please provide a more detailed answer (at least 10 characters)';
+      nudgeDiv.classList.remove('hidden');
+      setTimeout(() => nudgeDiv.classList.add('hidden'), 3000);
       return;
     }
+    
+    // Disable form while submitting
+    const submitBtn = answerDiv.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<div class="loading-spinner"></div> Submitting...';
+    
     onSubmit(val);
   };
 };

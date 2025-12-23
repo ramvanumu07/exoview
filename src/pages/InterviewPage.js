@@ -1,11 +1,20 @@
-import { fetchInterviewQuestions, fetchHRFeedback } from '../api/openRouterApi.js';
+import { fetchInterviewQuestions, fetchHRFeedback } from '../api/groqApi.js';
 import { renderProgressBar } from '../components/ProgressBar.js';
 import { renderQuestionCard } from '../components/QuestionCard.js';
 import { renderFeedbackCards } from '../components/FeedbackCards.js';
 import { logError } from '../utils/helpers.js';
 
 export const renderInterviewPage = async (container, session, onComplete) => {
-  container.innerHTML = `<div class="loading">Generating tailored interview questions…</div>`;
+  container.innerHTML = `
+    <div class="app-container">
+      <div class="main-content">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Generating tailored interview questions for ${session.user.role}...</div>
+        </div>
+      </div>
+    </div>
+  `;
 
   try {
     session.questions = await fetchInterviewQuestions(session.user.role);
@@ -22,15 +31,30 @@ export const renderInterviewPage = async (container, session, onComplete) => {
   }
 
   function nextQuestion() {
-    container.innerHTML = `<div class="app-card"></div>`;
-    const card = container.querySelector('.app-card');
+    container.innerHTML = `
+      <div class="app-container">
+        <div class="main-content">
+          <div class="chat-card" id="question-card"></div>
+        </div>
+      </div>
+    `;
+    const card = container.querySelector('#question-card');
     renderProgressBar(card, session.currentIdx, 5);
     renderQuestionCard(card, session.questions[session.currentIdx], onSubmitAnswer);
   }
 
   async function onSubmitAnswer(answer) {
     session.answers[session.currentIdx] = answer;
-    container.innerHTML = `<div class="loading">Receiving Interviewer Insights…</div>`;
+    container.innerHTML = `
+      <div class="app-container">
+        <div class="main-content">
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Analyzing your response and generating feedback...</div>
+          </div>
+        </div>
+      </div>
+    `;
 
     try {
       const fb = await fetchHRFeedback(session.questions[session.currentIdx], answer, session.user.role);
@@ -50,14 +74,20 @@ export const renderInterviewPage = async (container, session, onComplete) => {
   }
 
   function showFeedback(fb) {
-    container.innerHTML = `<div class="app-card"></div>`;
-    const card = container.querySelector('.app-card');
+    container.innerHTML = `
+      <div class="app-container">
+        <div class="main-content">
+          <div class="chat-card" id="feedback-card"></div>
+        </div>
+      </div>
+    `;
+    const card = container.querySelector('#feedback-card');
     renderProgressBar(card, session.currentIdx + 1, 5);
     renderFeedbackCards(card, fb);
 
     const nextBtn = document.createElement('button');
-    nextBtn.className = "main-btn next-btn";
-    nextBtn.textContent = session.currentIdx < 4 ? "Next Question" : "See Results";
+    nextBtn.className = "btn btn-primary btn-full-width mt-xl";
+    nextBtn.textContent = session.currentIdx < 4 ? "Continue to Next Question" : "View Final Results";
     nextBtn.onclick = () => {
       session.currentIdx += 1;
       if (session.currentIdx < 5) nextQuestion();
@@ -68,17 +98,21 @@ export const renderInterviewPage = async (container, session, onComplete) => {
 
   function showError(container, message, onRetry) {
     container.innerHTML = `
-      <div class="app-card">
-        <div class="error-container">
-          <h3 style="color: var(--hr-red); margin-bottom: 1rem;">⚠️ Something went wrong</h3>
-          <p class="error-message">${message}</p>
-          <button class="main-btn retry-btn" style="margin-top: 1.5rem;">Try Again</button>
-          <button class="main-btn" style="margin-top: 0.5rem; background: #666;" onclick="location.reload()">Start Over</button>
+      <div class="app-container">
+        <div class="main-content">
+          <div class="chat-card">
+            <div class="error-container">
+              <h3 style="color: var(--error); margin-bottom: 1rem;">⚠️ Something went wrong</h3>
+              <div class="error-message">${message}</div>
+              <button class="btn btn-primary mt-lg" id="retry-btn">Try Again</button>
+              <button class="btn btn-secondary mt-sm" onclick="location.reload()">Start Over</button>
+            </div>
+          </div>
         </div>
       </div>
     `;
 
-    const retryBtn = container.querySelector('.retry-btn');
+    const retryBtn = container.querySelector('#retry-btn');
     retryBtn.onclick = onRetry;
   }
 };
